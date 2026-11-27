@@ -1,0 +1,15 @@
+{
+  "id": "research-harness",
+  "name": "Research harness (store app)",
+  "description": "Tells the hub where the installed research harness is; the research view and watchdog are part of the hub.",
+  "apiVersion": 1,
+  "requires": {
+    "ccd": ">=1.0.0"
+  },
+  "provides": {
+    "researchHarness": "${HARNESS_DIR}"
+  },
+  "routes": [
+    "research view: /api/research/* (hub core) uses this harness"
+  ]
+}

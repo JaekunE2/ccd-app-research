@@ -1,0 +1,25 @@
+# On a version tag (v1.2.3): zip the app (app.json at the top) and attach it to the GitHub release, so the
+# Agent CLI Hub App Store can install it. GitHub records the asset's SHA-256, which the store checks.
+name: release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the app ZIP
+        run: |
+          id=$(python3 -c "import json; print(json.load(open('app.json'))['id'])")
+          git archive --format=zip --prefix="$id/" -o "$id.zip" HEAD -- . ':(exclude).github'
+          sha256sum "$id.zip" | tee "$id.zip.sha256"
+          echo "ASSET=$id.zip" >> "$GITHUB_ENV"
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=$(awk '/^## /{n++} n==1' CHANGELOG.md 2>/dev/null || true)
+          gh release create "$GITHUB_REF_NAME" "$ASSET" --title "$GITHUB_REF_NAME" --notes "${notes:-$GITHUB_REF_NAME}"

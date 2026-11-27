@@ -1,0 +1,4 @@
+node_modules/
+harness/config.json
+harness/local-env.md
+harness/.installed-by-hub-app

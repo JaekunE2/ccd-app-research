@@ -1,0 +1,39 @@
+{
+  "id": "research-harness",
+  "name": "Autonomous Research",
+  "version": "1.0.1",
+  "description": "Research harness for the hub's research view: a director agent runs idea → venue → literature → plan → experiments → analysis → paper → review, with hooks, a watchdog and phase gates.",
+  "usage": "1. Install, choosing where research projects go.\n2. Restart the hub once: the research view then uses this harness.\n3. New → Research director in the hub; follow progress in the Research section.\n4. Edit local-env.md in the harness folder to describe your machine (GPU, disks, rules).",
+  "purpose": "Lets a long research task keep going turn after turn without the user, while limits and gates stay outside the agent's reach.",
+  "requires": {"ccd": ">=1.0.0"},
+  "type": "command",
+  "store": {
+    "tagline": "A director agent that takes a research direction to a reviewed paper draft",
+    "category": "연구·자동화",
+    "icon": "icon.svg",
+    "screenshots": ["screenshots/research.png"]
+  },
+  "hubPlugin": "plugin",
+  "settings": [
+    { "key": "RESEARCH_ROOT", "label": "Research projects folder", "type": "path", "required": true,
+      "description": "Each project is created here as its own git repository. Never inside the harness folder." },
+    { "key": "HARNESS_DIR", "label": "Harness folder", "type": "path", "default": "{{APP_DIR}}\\harness",
+      "description": "Where the harness (templates, hooks, tools, limits) is installed. Default: inside the app folder." },
+    { "key": "SKILLS_DIR", "label": "Claude Code skills folder", "type": "path", "default": "",
+      "description": "Optional. Folder with paper-review / paper-claims / paper-numbers / paper-code skills (default ~/.claude/skills)." },
+    { "key": "LOCAL_ENV_FILE", "label": "Machine rules file", "type": "path", "default": "",
+      "description": "Optional Markdown with this machine's rules (GPU queue, disks, network). Copied into each new project's CLAUDE.md." },
+    { "key": "MAX_PARALLEL_WORKERS", "label": "Parallel worker sessions", "type": "number", "default": "2" },
+    { "key": "USAGE_SOFT_LIMIT", "label": "Usage soft limit (%)", "type": "number", "default": "85",
+      "description": "Above this share of the plan's usage the director slows down." },
+    { "key": "USAGE_HARD_LIMIT", "label": "Usage hard limit (%)", "type": "number", "default": "95",
+      "description": "Above this the director waits for the reset." }
+  ],
+  "actions": [
+    { "id": "status", "label": "Check installation", "kind": "command",
+      "cmd": "node scripts/status.js", "timeoutSec": 60 },
+    { "id": "reinstall", "label": "Reinstall harness files", "kind": "command",
+      "cmd": "powershell -NoProfile -ExecutionPolicy Bypass -File setup.ps1", "timeoutSec": 120 }
+  ],
+  "session": { "autoMatchCwd": false, "autoPinArtifacts": false }
+}
